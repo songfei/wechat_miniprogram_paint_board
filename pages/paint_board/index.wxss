@@ -1,1 +1,217 @@
 /* pages/paint_board/index.wxss */
+
+.navigation-bar {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 750rpx;
+  background-color: black;
+}
+
+.navigation-bar-title-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.navigation-bar-title {
+  position: absolute;
+  left: 100rpx;
+  right: 100rpx;
+  top: 0;
+  bottom: 0;
+  font-size: 36rpx;
+  color: #ffffff;
+  text-align: center;
+  font-weight: 500;
+}
+
+.choose-bar {
+  position: absolute;
+  height: 116rpx;
+  left: 0;
+  width: 750rpx;
+}
+
+.choose-bar-button {
+  position: absolute;
+  top: 0;
+  height: 116rpx;
+  width: 200rpx;
+  padding: 0 50rpx;
+}
+
+.choose-bar-text {
+  color: #ffffff;
+  line-height: 116rpx;
+  height: 116rpx;
+}
+
+.choose-bar-button.disable {
+  opacity: 0.3;
+}
+
+.choose-bar-icon {
+  position: absolute;
+  width: 14rpx;
+  height: 24rpx;
+  top: 46rpx;
+}
+
+.choose-bar-icon.choose-bar-left {
+  float: left;
+}
+
+.choose-bar-icon.choose-bar-right {
+  float: right;
+}
+
+
+
+.container {
+  position: fixed;
+  background-color: #000000;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height:100%;
+  pointer-events:none;
+}
+
+.canvas1 {
+  z-index: 100;
+}
+.canvas2 {
+  z-index: 101;
+}
+
+.bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 50% 50% 0;
+}
+
+.bottom-bar {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  right: 0;
+  bottom: 0rpx;
+  height: 240rpx;
+  overflow: visible;
+  background-color: #000000;
+}
+
+.tool-bar {
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  left: 0;
+  right: 0;
+  top: 20rpx;
+  height: 80rpx;
+  display: flex;
+}
+
+.tool-button {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 10rpx;
+  margin: 10rpx;
+}
+
+.tool-button.selected {
+    background: #ffffff;
+}
+
+.tool-button.disable {
+  opacity: 0.2;
+}
+
+.color-bar, .size-bar {
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  left: 0;
+  right: 0;
+  bottom: 240rpx;
+  height: 80rpx;
+  display: flex;
+}
+
+.color-button {
+  display: block;
+  width: 32rpx;
+  height: 32rpx;
+  margin: 32rpx;
+  border: 2px solid #ffffff;
+  border-radius: 32rpx;
+}
+
+.size-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40rpx;
+  height: 40rpx;
+  background: black;
+  margin: 16rpx;
+  border: 2px solid #ffffff;
+  border-radius: 40rpx;
+}
+
+.size-button-dot {
+  border-radius: 40rpx;
+}
+
+.option-bar {
+  position: absolute;
+  align-items: center;
+  justify-content: space-between;
+  left: 0;
+  right: 0;
+  top: 110rpx;
+  height: 80rpx;
+  display: flex;
+  padding: 0 20rpx;
+}
+
+.finish-button {
+  background-color: #4377BC;
+  border-radius: 200rpx;
+  color: #ffffff;
+  padding: 16rpx 40rpx;
+  font-size: 32rpx;
+}
+
+.finish-button.disable {
+  color: rgb(255,255,255,0.3);
+}
+
+.tool-button-group {
+  display: flex;
+}
+
+.console {
+  position: fixed;
+  bottom: 120px;
+  left:0;
+  right: 0;
+  height: 300px;
+  color: #ffffff;
+  background-color: rgba(0,0,0,0.5);
+}

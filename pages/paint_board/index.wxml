@@ -1,2 +1,73 @@
-<!--pages/paint_board/index.wxml-->
-<text>pages/paint_board/index.wxml</text>
+<!-- <cover-view class="console">
+  <cover-view wx:for="{{consoleTexts}}">{{item}}</cover-view>
+</cover-view> -->
+
+<cover-view class="navigation-bar" style="height: {{ menuButtonRect.height + menuButtonRect.top + 58}}px;">
+  <cover-view class="navigation-bar-title-bar" style="top: {{menuButtonRect.top}}px; height: {{menuButtonRect.height}}px;">
+    <cover-image src="/assets/review_icon_back.png" style="width: 36rpx; height: 54rpx; margin-left: 26rpx;" bindtap="onClickBackButton"></cover-image>
+    <cover-view class="navigation-bar-title" style="line-height: {{menuButtonRect.height}}px;">{{ title }}</cover-view>
+  </cover-view>
+  <cover-view class="choose-bar" style="top: {{menuButtonRect.bottom + 6}}px;">
+    <cover-view class="choose-bar-button {{currentImageIndex > 0 ? '': 'disable'}}" style="left: 0; text-align: left;" bindtap="onClickPreviouImage">
+      <cover-image class="choose-bar-icon" style="left: 30rpx;" src="/assets/review_icon_previou.png"></cover-image>
+      <cover-view class="choose-bar-text">上一张</cover-view>
+    </cover-view>
+    <cover-view class="choose-bar-button {{currentImageIndex < imageList.length - 1 ? '': 'disable'}}" style="right: 0; text-align: right;" bindtap="onClickNextImage">
+      <cover-view class="choose-bar-text">下一张</cover-view>
+      <cover-image class="choose-bar-icon" style="right: 30rpx;" src="/assets/review_icon_next.png"></cover-image>
+    </cover-view>
+  </cover-view>
+</cover-view>
+
+<view class="container" catchtouchstart='startTouch' catchtouchmove='moveTouch' catchtouchend='endTouch'
+  catchtouchcancel='cancelTouch'>
+  <canvas canvas-id="mainCanvas" disable-scroll="true" class="canvas canvas1">
+  </canvas>
+  <canvas canvas-id="tempCanvas" disable-scroll="true" class="canvas canvas2">
+  </canvas>
+  <image
+    mode="aspectFill" 
+    class="bg-image" 
+    style='width: {{canvasWidth}}px; height:{{canvasHeight}}px; top:{{canvasTop}}px; left:{{canvasLeft}}px; transform: translate({{deltaX}}px, {{deltaY}}px) rotate({{angle}}deg) scale({{scale}}); ' 
+    src="{{localImageUrl}}">
+  </image>
+</view>
+<cover-view class="bottom-bar">
+  <cover-view class="tool-bar">
+    <cover-image wx:for="{{drawTools}}" wx:key="name"
+      src="/assets/review_icon_{{item.name}}{{item.name === drawMode ? '_selected': ''}}.png"
+      class="tool-button {{item.name === drawMode ? 'selected': ''}}" data-mode="{{item.name}}"
+      bindtap="onClickModeButton"></cover-image>
+    <cover-view style="background-color: {{drawColor}}" class="color-button" bindtap="onClickModeColorButton">
+    </cover-view>
+    <cover-view class="size-button" bindtap="onClickModeSizeButton">
+      <cover-view style="background-color: {{drawColor}}; width:{{drawSize*3}}rpx; height:{{drawSize*3}}rpx;" class="size-button-dot"></cover-view>
+    </cover-view>
+  </cover-view>
+  <cover-view class="option-bar">
+    <cover-image src="/assets/review_icon_rotate.png" class="tool-button" bindtap="onClickRotateButton"></cover-image>
+    <cover-view class="tool-button-group">
+      <cover-image src="/assets/review_icon_revoke.png" class="tool-button {{!canRevoke ? 'disable': ''}}"
+        bindtap="onClickRevokeButton"></cover-image>
+      <cover-image src="/assets/review_icon_redo.png" class="tool-button {{!canRedo ? 'disable': ''}}"
+        bindtap="onClickRedoButton"></cover-image>
+    </cover-view>
+    <cover-view class="finish-button {{!canSubmit ? 'disable': ''}}" bindtap="onClickFinishButton">完成</cover-view>
+  </cover-view>
+</cover-view>
+
+<cover-view wx:if="{{showColorBar}}" class="color-bar">
+  <cover-view wx:for="{{colorList}}" wx:key="name" class="color-button" style="background-color: {{item.color}}"
+    data-color="{{item.color}}" bindtap="onClickColorButton"></cover-view>
+</cover-view>
+
+<cover-view wx:if="{{showSizeBar}}" class="size-bar">
+  <cover-view wx:for="{{sizeList}}" wx:key="name" class="size-button" data-size="{{item.size}}"
+    bindtap="onClickSizeButton">
+    <cover-view style="background-color: {{drawColor}}; width:{{item.size*3}}rpx; height:{{item.size*3}}rpx;"
+      class="size-button-dot"></cover-view>
+  </cover-view>
+</cover-view>
+
+<canvas wx:if="{{showOutputCanvas}}" canvas-id="outputCanvas"
+  style="width: {{outputWidth}}px; height: {{outputHeight}}px; position: fixed; top: 3000px; left: 0px;"></canvas>
