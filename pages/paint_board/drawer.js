@@ -1,5 +1,5 @@
 import {WechatCanvasContext} from './canvas_context.js';
-import {LineShape, RectShape, CircleShape, ArrowShape, TextShape} from './shape.js';
+import {GraffitiShape, LineShape, RectShape, CircleShape, ArrowShape, TextShape} from './shape.js';
 
 class Drawer {
 
@@ -153,6 +153,9 @@ class Drawer {
       }
     }
 
+    if(mode == 'graffiti') {
+      this.currentShape = new GraffitiShape();
+    }
     if(mode == 'circle') {
       this.currentShape = new CircleShape();
     }
@@ -163,12 +166,11 @@ class Drawer {
       this.currentShape = new ArrowShape();
     }
 
+    this.addShape(this.currentShape);
 
     this.currentShape.touchSession = session;
     this.currentShape.startShape(x, y);
-
-    this.addShape(this.currentShape);
-
+    this.currentShape.prepareDrawShape(this.tempContext);
   }
 
   touchMove(mode, x, y, session) {
@@ -178,9 +180,15 @@ class Drawer {
       }
 
       this.currentShape.addPoint(x, y);
-      this.currentShape.drawShape(this.tempContext);
-      // this.currentShape.drawSelectedBorder(this.tempContext);
-      this.tempContext.draw();
+      if(this.currentShape.isReserveDraw) {
+        this.currentShape.drawLastStroke(this.tempContext);
+        this.tempContext.draw(true);
+      }
+      else {
+        this.currentShape.drawShape(this.tempContext);
+        // this.currentShape.drawSelectedBorder(this.tempContext);
+        this.tempContext.draw(false);
+      }
     }
   }
 
@@ -192,12 +200,23 @@ class Drawer {
 
       this.currentShape.finishShape();
       this.currentShape = null;
+      this.updateAllShape();
     }
     console.log('shape list:', this.shapeList);
   }
 
   updateAllShape() {
+    for(var i=0; i<this.shapeList.length; i++) {
+      if(i >= this.currentShapeIndex) {
+        break;
+      }
+      var shape = this.shapeList[i];
+      shape.drawShape(this.mainContext);
+    }
+    this.mainContext.draw();
 
+    this.tempContext.beginPath();
+    this.tempContext.draw();
   }
 
 }

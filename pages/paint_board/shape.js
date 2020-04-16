@@ -30,6 +30,7 @@ class BaseShape {
     //额外信息
     this.status = 'init';
     this.touchSession = -1;
+    this.isReserveDraw = false;
   }
 
   setCenter(x, y) {
@@ -69,6 +70,8 @@ class BaseShape {
     return false;
   }
 
+  prepareDrawShape(context) {}
+
   drawShape(context) {}
 
   // 画最后一笔， 给涂鸦用的
@@ -87,17 +90,20 @@ class BaseShape {
   }
 
   _startDraw(context) {
-    context.moveTo(2, 0);
-    context.setStrokeStyle('#ffff00');
-    context.setLineWidth(3);
-    context.arc(0, 0, 2, 0, 2 * Math.PI);
-    context.stroke();
-
     context.setLineWidth(this.lineWidth);
     context.setStrokeStyle(this.strokeColor);
     context.setFillStyle(this.fillColor);
     context.setLineCap('round');
     context.setLineJoin('round');
+  }
+
+  _finishDraw(context) {
+    context.beginPath();
+    context.moveTo(2, 0);
+    context.setStrokeStyle('#ffff00');
+    context.setLineWidth(3);
+    context.arc(0, 0, 2, 0, 2 * Math.PI);
+    context.stroke();
   }
   
   _finishTransform(context) {
@@ -209,6 +215,7 @@ class LineShape extends TowControlPointsShape {
     context.lineTo(this.points[1][0], this.points[1][1]);
     context.stroke();
 
+    this._finishDraw(context);
     this._finishTransform(context);
   }
 
@@ -235,6 +242,7 @@ class RectShape extends TowControlPointsShape {
 
     context.strokeRect(lX, lY, width, height);
 
+    this._finishDraw(context);
     this._finishTransform(context);
   }
 }
@@ -271,6 +279,7 @@ class CircleShape extends TowControlPointsShape {
     context.closePath();
     context.stroke();
 
+    this._finishDraw(context);
     this._finishTransform(context);
   }
 }
@@ -329,12 +338,137 @@ class ArrowShape extends TowControlPointsShape {
     context.closePath();
     context.fill();
 
+    this._finishDraw(context);
     this._finishTransform(context);
   }
 }
 
 class GraffitiShape extends BaseShape {
-  
+  constructor() {
+    super();
+    this.type = 'graffiti';
+    this.isReserveDraw = true;
+  }
+
+  _updateCenter() {
+    var dx = (this.minX + this.maxX) / 2 - this.centerPoint[0];
+    var dy = (this.minY + this.maxY) / 2 - this.centerPoint[1];
+
+    this.centerPoint[0] += dx;
+    this.centerPoint[1] += dy;
+
+    for(var i=0; i<this.points.length; i++) {
+      this.points[i][0] -= dx;
+      this.points[i][1] -= dy;
+    }
+  }
+
+  prepareDrawShape(context) {
+    context.beginPath();
+    context.setLineWidth(this.lineWidth);
+    context.setStrokeStyle(this.strokeColor);
+    context.setLineCap('round');
+    context.setLineJoin('round');
+  }
+
+  drawLastStroke(context) {
+    if(this.needUpdateLastStorke && this.points.length >0) {
+      var x = this.points[this.points.length - 1][0];
+      var y = this.points[this.points.length - 1][1];
+      
+      var pX = x;
+      var pY = y;
+      var ppX = x;
+      var ppY = y;
+      
+      if(this.points.length > 1) {
+        pX = this.points[this.points.length - 2][0];
+        pY = this.points[this.points.length - 2][1];
+        ppX = pX;
+        ppY = pY;
+      }
+
+      if(this.points.length > 2) {
+        ppX = this.points[this.points.length - 3][0];
+        ppY = this.points[this.points.length - 3][1];
+      }
+      
+      context.moveTo((pX + ppX) / 2, (pY + ppY) / 2);
+      context.quadraticCurveTo(pX, pY, (x + pX) / 2, (y + pY) / 2);
+      context.stroke();
+    }
+  }
+
+  drawShape(context) {
+    if(this.points.length < 1) {
+      return;
+    }
+
+    super.drawShape(context);
+    this._startTransform(context);
+    this._startDraw(context);
+    
+    context.beginPath();
+
+    var pX = this.points[0][0];
+    var pY = this.points[0][1];
+    var mX = this.points[0][0];
+    var mY = this.points[0][1];
+
+    for (var j = 1; j < this.points.length; j++) {
+      var point = this.points[j];
+      context.moveTo(mX, mY);
+      context.quadraticCurveTo(pX, pY, ((point[0] + pX) / 2), ((point[1] + pY) / 2));
+
+      mX = (point[0] + pX) / 2;
+      mY = (point[1] + pY) / 2;
+      pX = point[0];
+      pY = point[1];
+    }
+    context.stroke();
+
+    this._finishDraw(context);
+    this._finishTransform(context);
+  }
+
+  startShape(x, y) {
+    super.startShape(x, y);
+    this.centerPoint = [0, 0];
+    this.points = [[x, y]];
+    this.minX = x;
+    this.maxX = x;
+    this.minY = y;
+    this.maxY = y;
+
+    this.needUpdateLastStorke = false;
+    this.updateRect();
+  }
+
+  addPoint(x, y) {
+    super.addPoint(x, y);
+    
+    var pX = this.points[this.points.length - 1][0];
+    var pY = this.points[this.points.length - 1][1];
+
+    var distance = (pX - x) * (pX - x) + (pY - y) * (pY - y);
+    if(distance > 25) {
+      this.minX = Math.min(this.minX, x);
+      this.maxX = Math.max(this.maxX, x);
+      this.minY = Math.min(this.minY, y);
+      this.maxY = Math.max(this.maxY, y);
+
+      this.points.push([x,y]);
+      this.needUpdateLastStorke = true;
+    }
+    
+    this.updateRect();
+  }
+
+  finishShape() {
+    super.finishShape();
+    this._updateCenter();
+    this.updateRect();
+  }
 }
 
 class TextShape extends BaseShape {
@@ -388,6 +522,7 @@ class TextShape extends BaseShape {
     context.strokeText(this.text, 0, 0);
     context.fillText(this.text, 0, 0);
     
+    this._finishDraw(context);
     this._finishTransform(context);
   }
 }
