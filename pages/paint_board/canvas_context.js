@@ -3,6 +3,13 @@ class BaseCanvasContext {
 
   constructor(canvasId) {
     this.canvasId = canvasId;
+
+    this.transform = {
+      dx: 0,
+      dy: 0,
+      scale: 1,
+      angle: 0,
+    };
   }
 
   setFillStyle(style) {}
@@ -11,6 +18,9 @@ class BaseCanvasContext {
   setLineCap(cap) {}
   setLineJoin(join) {}
 
+  save() {}
+  restore() {}
+
   beginPath() {}
   closePath() {}
 
@@ -18,6 +28,7 @@ class BaseCanvasContext {
   lineTo(x, y) {}
   quadraticCurveTo(cpx, cpy, x, y) {}
   bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y) {}
+  arc(x, y ,r, sa, ea) {}
 
   stroke() {}
   fill() {}
@@ -28,6 +39,13 @@ class BaseCanvasContext {
   translate(dx, dy) {}
 
   drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {}
+
+  setFontSize(size) {}
+  setTextAlign(align) {}
+  setTextBaseline(baseline) {}
+
+  fillText(text, x, y) {}
+  strokeText(text, x, y) {}
 
   draw(reserve, finishCallback) {}
 }
@@ -40,67 +58,94 @@ class WechatCanvasContext extends BaseCanvasContext {
   }
 
   setFillStyle(style) {
-    wx.setFillStyle(style);
+    this.context.setFillStyle(style);
   }
   setStrokeStyle(style) {
-    wx.setStrokeStyle(style);
+    this.context.setStrokeStyle(style);
   }
   setLineWidth(width) {
-    wx.setLineWidth(width);
+    this.context.setLineWidth(width);
   }
   setLineCap(cap) {
-    wx.setLineCap(cap);
+    this.context.setLineCap(cap);
   }
   setLineJoin(join) {
-    wx.setLineJoin(join);
+    this.context.setLineJoin(join);
   }
 
   beginPath() {
-    wx.beginPath();
+    this.context.beginPath();
   }
   closePath() {
-    wx.closePath();
+    this.context.closePath();
   }
 
   moveTo(x, y) {
-    wx.moveTo(x, y);
+    this.context.moveTo(x, y);
   }
   lineTo(x, y) {
-    wx.lineTo(x, y);
+    this.context.lineTo(x, y);
   }
   quadraticCurveTo(cpx, cpy, x, y) {
-    wx.quadraticCurveTo(cpx, cpy, x, y);
+    this.context.quadraticCurveTo(cpx, cpy, x, y);
   }
   bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y) {
-    wx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+    this.context.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+  }
+  arc(x, y ,r, sa, ea) {
+    this.context.arc(x, y, r, sa, ea);
   }
 
   stroke() {
-    wx.stroke();
+    this.context.stroke();
   }
   fill() {
-    wx.fill();
+    this.context.fill();
   }
   strokeRect(x, y, w, h) {
-    wx.strokeRect(x, y, w, h);
+    this.context.strokeRect(x, y, w, h);
   }
 
   rotate(angle) {
-    wx.rotate(angle);
+    this.context.rotate(angle);
   }
   scale(x, y) {
-    wx.scale(x, y);
+    this.context.scale(x, y);
   }
   translate(dx, dy) {
-    wx.translate(dx, dy);
+    this.context.translate(dx, dy);
   }
 
   drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
-    wx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+    this.context.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+  }
+
+  setFontSize(size) {
+    this.context.setFontSize(size);
+  }
+
+  setTextAlign(align) {
+    this.context.setTextAlign(align);
+  }
+
+  setTextBaseline(baseline) {
+    this.context.setTextBaseline(baseline);
+  }
+
+  fillText(text, x, y) {
+    this.context.fillText(text, x, y);
+  }
+
+  strokeText(text, x, y) {
+    this.context.strokeText(text, x, y);
+  }
+
+  measureText(text) {
+    return this.context.measureText(text);
   }
 
   draw(reserve, finishCallback) {
-    wx.draw(reserve, finishCallback);
+    this.context.draw(reserve, finishCallback);
   }
 }
 

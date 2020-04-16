@@ -17,7 +17,7 @@
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.10.4",
-	"appid": "wxcd173a536c6e5bf4",
+	"appid": "wx50ab4ff8ebb0e07f",
 	"projectname": "wechat_miniprogram_paint_board",
 	"debugOptions": {
 		"hidedInDevtools": []
@@ -50,9 +50,10 @@
 			"current": -1,
 			"list": [
 				{
-					"id": -1,
+					"id": 0,
 					"name": "pages/paint_board/index",
 					"pathName": "pages/paint_board/index",
+					"query": "imageUrls=https%3A%2F%2Fres.wx.qq.com%2Fwxdoc%2Fdist%2Fassets%2Fimg%2F0.4cb08bb4.jpg",
 					"scene": null
 				}
 			]

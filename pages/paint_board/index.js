@@ -1,4 +1,10 @@
 // pages/paint_board/index.js
+
+import {WechatCanvasContext} from './canvas_context.js';
+import {LineShape, RectShape, CircleShape, ArrowShape, TextShape} from './shape.js';
+import WxTouch from './wx-touch.js';
+import {Drawer} from './drawer.js';
+
 Page({
 
   /**
@@ -26,8 +32,8 @@ Page({
     canvasTop: 0,
     canvasLeft: 0,
 
-    deltaX: 0,
-    deltaY: 0,
+    dx: 0,
+    dy: 0,
     angle: 0,
     scale: 1,
 
@@ -47,7 +53,7 @@ Page({
         name: 'circle',
       },
       {
-        name: 'box',
+        name: 'rect',
       },
       {
         name: 'arrow',
@@ -125,9 +131,13 @@ Page({
     showOutputCanvas: true,
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
+  touchTransform: {
+    dx: 0,
+    dy: 0,
+    angle: 0,
+    scale: 1,
+  },
+
   onLoad: function (options) {
     var currentImageIndex = 0;
     if(options && options.imageUrls) {
@@ -158,8 +168,6 @@ Page({
   onReady: function () {
     var that = this;
 
-    
-
     setTimeout(function () {
       that.setData({ drawMode: 'graffiti'});
     }, 100); 
@@ -170,46 +178,66 @@ Page({
     });
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
   onShow: function () {
+    wx.hideShareMenu();
 
+    // var context = new WechatCanvasContext('mainCanvas', 'tempCanvas');
+    
+    // context.setStrokeStyle('#00ff00');
+    // context.setLineWidth(1);
+    // context.moveTo(187.5, 0);
+    // context.lineTo(187.5, 600);
+    // context.moveTo(0, 350);
+    // context.lineTo(375, 350);
+    // context.stroke();
+
+    // var shape = new CircleShape();
+    // shape.centerPoint = [187.5,350];
+    // shape.points[0] = [ -50, -30];
+    // shape.points[1] = [50, 30];
+    // shape.transform.angle = 30 * 2 * Math.PI / 360;
+    // shape.drawShape(context);
+    // shape.drawSelectedBorder(context);
+
+    // shape.transform.angle = 60 * 2 * Math.PI / 360;
+    // shape.transform.scale = 3;
+    // shape.drawShape(context);
+    // shape.drawSelectedBorder(context);
+    // shape.transform.scale = 1;
+    // shape.transform.dx = 50;
+    // shape.transform.dy = 50;
+    // shape.transform.angle = 0;
+    // shape.drawShape(context);
+    // shape.drawSelectedBorder(context);
+
+
+    // var textShape = new TextShape();
+    // textShape.centerPoint = [187.5,350];
+    // textShape.text = '宋飞卓越';
+    // textShape.strokeColor = "#ffffff";
+    // textShape.transform.scale = 2;
+    // textShape.transform.angle = 30 * 2 * Math.PI / 360;
+    // textShape.updateTextRect(context);
+    // textShape.drawShape(context);
+    // textShape.drawSelectedBorder(context);
+
+    // context.draw();
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
   onHide: function () {
 
   },
 
-  /**
-   * 生命周期函数--监听页面卸载
-   */
   onUnload: function () {
 
   },
 
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
   onShareAppMessage: function () {
 
+  },
+
+  currentDrawer: function() {
+    return this.data.imageList[this.data.currentImageIndex].drawer;
   },
 
   onClickModeButton: function(e) {
@@ -247,4 +275,112 @@ Page({
       showSizeBar: false,
     })
   },
+
+  ...WxTouch("Touch", {
+    touchstart(evt) {
+      // this.log('start touch!' + evt.sessionId);
+      this.touchTransform.dx = this.data.dx;
+      this.touchTransform.dy  = this.data.dy;
+      this.touchTransform.angle = this.data.angle;
+      this.touchTransform.scale = this.data.scale;
+
+      this.currentDrawer().touchBegin(this.data.drawMode, evt.touches[0].clientX, evt.touches[0].clientY, evt.sessionId);
+      
+    },
+
+    touchmove(evt) {
+      // console.log(evt);
+
+      // 屏蔽回退手势
+      if(evt.touches[0].clientY < 0) {
+        return;
+      }
+
+      let undef, data = {};
+
+      // var realCanvasWidth = (this.data.transform.scale.angle == 90 || this.data.transform.scale.angle == 270) ? this.data.canvasHeight : this.data.canvasWidth;
+      // var realCanvasHeight = (this.data.transform.scale.angle == 90 || this.data.transform.scale.angle == 270) ? this.data.canvasWidth : this.data.canvasHeight;
+
+      if (evt.scale !== undef) {
+        data.scale = evt.scale;
+
+        if(data.scale < 1) {
+          data.scale = 1;
+        }
+  
+        if(data.scale > 3) {
+          data.scale = 3;
+        }
+      }
+
+      if (evt.deltaX !== undef) {
+        data.dx = evt.deltaX;
+        data.dy = evt.deltaY;
+
+        // var maxDeltaX =  Math.abs(realCanvasWidth * ( data.scale - 1) / 2);
+        // var maxDeltaY =  Math.abs(realCanvasHeight * ( data.scale.scale - 1) / 2);
+
+        // if(data.dx > maxDeltaX) {
+        //   data.dx = maxDeltaX;
+        // }
+        // if(data.dx < -maxDeltaX) {
+        //   data.dx = -maxDeltaX;
+        // }
+
+        // if(data.dy > maxDeltaY) {
+        //   data.dy = maxDeltaY;
+        // }
+        // if(data.dy < -maxDeltaY) {
+        //   data.dy = -maxDeltaY;
+        // } 
+      }
+
+      // if (evt.angle !== undef) {
+      //   data.angle = evt.angle;
+      // }
+
+      // this.log('dx,xy:' + Math.floor(data.deltaX) + ',' + Math.floor(data.deltaY) + '   scale:' + data.scale);
+      // 一次性调用 setData
+      this.setData(data);
+      this.currentDrawer().setTransform(data);
+
+      if(evt.touches.length === 1) {
+        this.currentDrawer().touchMove(this.data.drawMode, evt.touches[0].clientX, evt.touches[0].clientY, evt.sessionId);
+      }
+    },
+
+    touchend(evt) {
+      // console.log(evt);
+      // this.log('end touch!' + evt.sessionId)
+
+      if (evt.touches.length) {
+        this.touchTransform.dx = this.data.transform.dx;
+        this.touchTransform.dy = this.data.transform.dy;
+      }
+
+      this.currentDrawer().touchEnd(this.data.drawMode, evt.sessionId);
+    },
+
+    touchcancel(evt) {
+      // this.log('cancel touch!' + evt.sessionId)
+
+    },
+
+    pressmove(evt) {
+      // console.log(evt);
+      evt.deltaX += store.deltaX;
+      evt.deltaY += store.deltaY;
+    },
+
+    // rotate(evt) {
+    //   // console.log(evt);
+
+    //   // 仅仅设置数据，统一到 touchmove 处理器中调用 setData
+    //   // evt.angle += store.angle;
+    // },
+
+    pinch(evt) {
+      evt.scale *= store.scale;
+    },
+  })
 })
