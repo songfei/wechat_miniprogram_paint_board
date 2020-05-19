@@ -51,9 +51,16 @@
 			"list": [
 				{
 					"id": 0,
-					"name": "pages/paint_board/index",
+					"name": "绘图板",
 					"pathName": "pages/paint_board/index",
 					"query": "imageUrls=https%3A%2F%2Fres.wx.qq.com%2Fwxdoc%2Fdist%2Fassets%2Fimg%2F0.4cb08bb4.jpg",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "输入文本",
+					"pathName": "pages/input_text/index",
+					"query": "",
 					"scene": null
 				}
 			]

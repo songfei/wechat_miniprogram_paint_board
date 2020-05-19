@@ -2,7 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/logs/logs",
-    "pages/paint_board/index"
+    "pages/paint_board/index",
+    "pages/input_text/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

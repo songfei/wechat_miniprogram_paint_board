@@ -1,7 +1,7 @@
 // pages/paint_board/index.js
 
 import {WechatCanvasContext} from './canvas_context.js';
-import {LineShape, RectShape, CircleShape, ArrowShape, TextShape} from './shape.js';
+import {LineShape, RectShape, CircleShape, ArrowShape, TextShape} from './drawing_shape.js';
 import WxTouch from './wx-touch.js';
 import {Drawer} from './drawer.js';
 
@@ -42,10 +42,14 @@ Page({
     drawSize: 3,
 
     canSubmit: false,
+    isEmpty: true,
     canRevoke: false,
     canRedo: false,
 
     drawTools: [
+      {
+        name: 'move',
+      },
       {
         name: 'graffiti',
       },
@@ -58,9 +62,7 @@ Page({
       {
         name: 'arrow',
       },
-      {
-        name: 'text',
-      },
+   
     ],
     colorList: [
       {
@@ -87,10 +89,10 @@ Page({
         name: 'magenta',
         color: '#ff00ff',
       },
-      {
-        name: 'orange',
-        color: '#ffa500',
-      },
+      // {
+      //   name: 'orange',
+      //   color: '#ffa500',
+      // },
       {
         name: 'black',
         color: '#000000',
@@ -129,6 +131,8 @@ Page({
     ],
     showSizeBar: false,
     showOutputCanvas: true,
+
+    consoleTexts: ['hello, world!'],
   },
 
   touchTransform: {
@@ -137,7 +141,7 @@ Page({
     angle: 0,
     scale: 1,
   },
-
+  
   onLoad: function (options) {
     var currentImageIndex = 0;
     if(options && options.imageUrls) {
@@ -152,7 +156,16 @@ Page({
           currentImageIndex = 0;
         }
       }
-      imageList[currentImageIndex].drawer = new Drawer(imageList[currentImageIndex].imageUrl, this.updater);
+
+      var systemInfo = wx.getSystemInfoSync();
+      console.log(systemInfo);
+      imageList[currentImageIndex].drawer = new Drawer({
+        imageUrl: imageList[currentImageIndex].imageUrl, 
+        updater: this.updater, 
+        width: systemInfo.windowWidth,
+        height: systemInfo.windowHeight,
+        loger: this.addLog,
+      });
       console.log('image list:', imageList);
 
       this.setData({
@@ -236,6 +249,19 @@ Page({
 
   },
 
+  updater(obj) {
+    console.log('update:', obj)
+
+    let canSubmit = false
+    for (let i = 0; i < this.data.imageList.length; i++) {
+      const imageItem = this.data.imageList[i]
+      if (imageItem.drawer && !imageItem.drawer.isEmpty) {
+        canSubmit = true
+      }
+    }
+    this.setData({ canSubmit, ...obj })
+  },
+
   currentDrawer: function() {
     return this.data.imageList[this.data.currentImageIndex].drawer;
   },
@@ -246,6 +272,7 @@ Page({
     this.setData({
       drawMode: mode,
     })
+    this.currentDrawer().drawMode = mode;
   },
   onClickModeColorButton: function() {
     this.setData({
@@ -275,6 +302,89 @@ Page({
       showSizeBar: false,
     })
   },
+  onClickCleanButton: function() {
+    var that = this;
+    if (!this.currentDrawer().isEmpty) {
+      wx.showModal({
+        content: '确定清除所有绘制？',
+        success (res) {
+          if (res.confirm) {
+            that.currentDrawer().reset();
+          }
+        },
+      });
+    }
+  },
+  onClickRevokeButton: function() {
+    if(this.data.canRevoke) {
+      this.currentDrawer().revoke();
+    }
+  },
+  onClickRedoButton: function() {
+    if(this.data.canRedo) {
+      this.currentDrawer().redo();
+    }
+  },
+  onClickTextButton: function() {
+    var that = this;
+    wx.navigateTo({
+      url: '/pages/input_text/index',
+      events: {
+        editTextFinish: function(data) {
+          setTimeout(function(){
+            console.log(data)
+            that.currentDrawer().addTextShape(data);
+            that.setData({
+              drawMode: 'move',
+            });
+          }, 500);
+        },
+      },
+      success: function(res) {
+        // res.eventChannel.emit('updateText', { data: 'test' })
+      }
+    });
+  },
+  touchStart: function(e) {
+    // console.log('touch start', e)
+    this.currentDrawer().touch.touchStart({
+      timestamp: e.timeStamp,
+      touches: e.touches.map(function(v){
+        return {
+          id: v.identifier,
+          x: v.clientX,
+          y: v.clientY,
+        };
+      }),
+    });
+  },
+  touchMove: function(e) {
+    // console.log('touch move', e);
+    this.currentDrawer().touch.touchMove({
+      timestamp: e.timeStamp,
+      touches: e.touches.map(function(v){
+        return {
+          id: v.identifier,
+          x: v.clientX,
+          y: v.clientY,
+        };
+      }),
+    });
+  },
+  touchEnd: function(e) {
+    // console.log('touch end', e);
+    this.currentDrawer().touch.touchEnd({
+      timestamp: e.timeStamp,
+      touches: e.touches.map(function(v){
+        return {
+          id: v.identifier,
+          x: v.clientX,
+          y: v.clientY,
+        };
+      }),
+    });
+  },
+
 
   ...WxTouch("Touch", {
     touchstart(evt) {

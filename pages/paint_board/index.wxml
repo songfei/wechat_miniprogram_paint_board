@@ -19,7 +19,7 @@
   </cover-view>
 </cover-view>
 
-<view class="container" catchtouchstart='startTouch' catchtouchmove='moveTouch' catchtouchend='endTouch'
+<view class="container" catchtouchstart='touchStart' catchtouchmove='touchMove' catchtouchend='touchEnd'
   catchtouchcancel='cancelTouch'>
   <canvas canvas-id="mainCanvas" disable-scroll="true" class="canvas canvas1">
   </canvas>
@@ -38,6 +38,7 @@
       src="/assets/review_icon_{{item.name}}{{item.name === drawMode ? '_selected': ''}}.png"
       class="tool-button {{item.name === drawMode ? 'selected': ''}}" data-mode="{{item.name}}"
       bindtap="onClickModeButton"></cover-image>
+    <cover-image src="/assets/review_icon_text.png" class="tool-button" bindtap="onClickTextButton"></cover-image>
     <cover-view style="background-color: {{drawColor}}" class="color-button" bindtap="onClickModeColorButton">
     </cover-view>
     <cover-view class="size-button" bindtap="onClickModeSizeButton">
@@ -49,6 +50,8 @@
     <cover-view class="tool-button-group">
       <cover-image src="/assets/review_icon_revoke.png" class="tool-button {{!canRevoke ? 'disable': ''}}"
         bindtap="onClickRevokeButton"></cover-image>
+      <cover-image src="/assets/review_icon_clean.png" class="tool-button {{isEmpty ? 'disable': ''}}"
+        bindtap="onClickCleanButton"></cover-image>
       <cover-image src="/assets/review_icon_redo.png" class="tool-button {{!canRedo ? 'disable': ''}}"
         bindtap="onClickRedoButton"></cover-image>
     </cover-view>

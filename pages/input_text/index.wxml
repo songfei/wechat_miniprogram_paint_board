@@ -1,0 +1,21 @@
+<view class="canvas-box">
+  <canvas canvas-id="mainCanvas" style="width: {{screenWidth}}px; height: 200px;"></canvas>
+</view>
+<view class="input-field">
+  <input 
+    focus="{{true}}" 
+    cursor-spacing="20" 
+    hold-keyboard="{{true}}" 
+    maxlength="15" 
+    bindinput="onInputText" 
+    bindconfirm="onFinishButton" 
+    value="宋飞卓越" 
+    selection-start="0"
+    selection-end="5"
+  ></input>
+</view>
+
+<cover-view class="color-bar">
+  <cover-view wx:for="{{colorList}}" wx:key="name" class="color-button" style="background-color: {{item.color}}"
+    data-color="{{item.color}}" data-index="{{index}}" bindtap="onClickColorButton"></cover-view>
+</cover-view>

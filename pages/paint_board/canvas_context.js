@@ -113,6 +113,7 @@ class WechatCanvasContext extends BaseCanvasContext {
     this.context.scale(x, y);
   }
   translate(dx, dy) {
+    // console.log('set translate', this.canvasId, dx, dy);
     this.context.translate(dx, dy);
   }
 
@@ -145,6 +146,11 @@ class WechatCanvasContext extends BaseCanvasContext {
   }
 
   draw(reserve, finishCallback) {
+  if(!reserve){
+    // console.log('draw', this.canvasId, reserve);
+
+  }
+
     this.context.draw(reserve, finishCallback);
   }
 }

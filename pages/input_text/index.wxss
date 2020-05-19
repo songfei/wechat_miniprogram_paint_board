@@ -1,0 +1,43 @@
+page {
+  background-color: rgba(0,0,0, 0.7);
+}
+.canvas-box {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 200rpx;
+}
+
+.input-field {
+  background-color: #ffffff;
+  padding: 20rpx;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.input-field input {
+  color: #000000;
+}
+
+.color-bar, .size-bar {
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  left: 0;
+  right: 0;
+  bottom: 120rpx;
+  height: 80rpx;
+  display: flex;
+}
+
+.color-button {
+  display: block;
+  width: 32rpx;
+  height: 32rpx;
+  margin: 20rpx;
+  border: 2px solid #ffffff;
+  border-radius: 32rpx;
+}

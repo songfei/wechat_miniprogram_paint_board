@@ -130,7 +130,7 @@
   width: 72rpx;
   height: 72rpx;
   border-radius: 10rpx;
-  margin: 10rpx;
+  margin: 5rpx;
 }
 
 .tool-button.selected {
@@ -157,7 +157,7 @@
   display: block;
   width: 32rpx;
   height: 32rpx;
-  margin: 32rpx;
+  margin: 20rpx;
   border: 2px solid #ffffff;
   border-radius: 32rpx;
 }
